@@ -285,7 +285,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+          "S3Key": "serverless/project4service/dev/1664882797270-2022-10-04T11:26:37.270Z/project4service.zip"
         },
         "Handler": "s_Auth.handler",
         "Runtime": "nodejs12.x",
@@ -321,7 +321,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+          "S3Key": "serverless/project4service/dev/1664882797270-2022-10-04T11:26:37.270Z/project4service.zip"
         },
         "Handler": "s_GetTodos.handler",
         "Runtime": "nodejs12.x",
@@ -358,7 +358,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+          "S3Key": "serverless/project4service/dev/1664882797270-2022-10-04T11:26:37.270Z/project4service.zip"
         },
         "Handler": "s_CreateTodo.handler",
         "Runtime": "nodejs12.x",
@@ -395,7 +395,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+          "S3Key": "serverless/project4service/dev/1664882797270-2022-10-04T11:26:37.270Z/project4service.zip"
         },
         "Handler": "s_UpdateTodo.handler",
         "Runtime": "nodejs12.x",
@@ -432,7 +432,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+          "S3Key": "serverless/project4service/dev/1664882797270-2022-10-04T11:26:37.270Z/project4service.zip"
         },
         "Handler": "s_DeleteTodo.handler",
         "Runtime": "nodejs12.x",
@@ -469,7 +469,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+          "S3Key": "serverless/project4service/dev/1664882797270-2022-10-04T11:26:37.270Z/project4service.zip"
         },
         "Handler": "s_GenerateUploadUrl.handler",
         "Runtime": "nodejs12.x",
@@ -499,64 +499,64 @@
         "GenerateUploadUrlLogGroup"
       ]
     },
-    "AuthLambdaVersionW6Cb7RmLabfPjs8CNb4Db1qXYnMQjPQoetyGwhtE": {
+    "AuthLambdaVersionTRhiNvl5bKvlEESnbgi3MKNGpv8YQgNcP3Mz6cbx0": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AuthLambdaFunction"
         },
-        "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+        "CodeSha256": "bfC2srGM/TrTTBruoZHnfqIJo+vr4pSEEl928Qox9wU="
       }
     },
-    "GetTodosLambdaVersionGJchTzwsniSAWOBmyczjtcAHijwoum9tBb1supy660": {
+    "GetTodosLambdaVersion12O5hd3YIJTeiiZcvWQriEKdBsaEZK2Q21insSzBws": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetTodosLambdaFunction"
         },
-        "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+        "CodeSha256": "bfC2srGM/TrTTBruoZHnfqIJo+vr4pSEEl928Qox9wU="
       }
     },
-    "CreateTodoLambdaVersionwpCAPrDboUBTpCOErKfIfy9lgDus0sNwh7jVHKn68Q": {
+    "CreateTodoLambdaVersionzFpn9avUz6PZlDtoSFaa16p7LVxVHK5sP5als2kZhc": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateTodoLambdaFunction"
         },
-        "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+        "CodeSha256": "bfC2srGM/TrTTBruoZHnfqIJo+vr4pSEEl928Qox9wU="
       }
     },
-    "UpdateTodoLambdaVersions9AFn0CZbaCXIBUPGytJaKqgV7YimRMehjQrh6AWxbk": {
+    "UpdateTodoLambdaVersionD0F8Y0VUIvVnsf6WdnLZIcIe4Hq8o0xJ4i1IhqpT8": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "UpdateTodoLambdaFunction"
         },
-        "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+        "CodeSha256": "bfC2srGM/TrTTBruoZHnfqIJo+vr4pSEEl928Qox9wU="
       }
     },
-    "DeleteTodoLambdaVersion7uQ9vadwrwAphScljhlLZMGXkpJXHRR5KcMYMpuwJec": {
+    "DeleteTodoLambdaVersionBSsDHarDUADjs0lWL5emviu6SoZ3cOaKYbblh4m28": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "DeleteTodoLambdaFunction"
         },
-        "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+        "CodeSha256": "bfC2srGM/TrTTBruoZHnfqIJo+vr4pSEEl928Qox9wU="
       }
     },
-    "GenerateUploadUrlLambdaVersionIWKNZrDqTswud46IH2e2SSiym0SiGe4xDd4HQUE": {
+    "GenerateUploadUrlLambdaVersione0NDJhk0L8daehVnvoMVV3LXw6MdSE85jhi6UsDUw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GenerateUploadUrlLambdaFunction"
         },
-        "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+        "CodeSha256": "bfC2srGM/TrTTBruoZHnfqIJo+vr4pSEEl928Qox9wU="
       }
     },
     "ApiGatewayRestApi": {
@@ -1099,7 +1099,7 @@
         "Type": "TOKEN"
       }
     },
-    "ApiGatewayDeployment1664868494513": {
+    "ApiGatewayDeployment1664882716409": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -1449,7 +1449,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/custom-resources.zip"
+          "S3Key": "serverless/project4service/dev/1664882797270-2022-10-04T11:26:37.270Z/custom-resources.zip"
         },
         "FunctionName": "project4service-dev-custom-resource-apigw-cw-role",
         "Handler": "api-gateway-cloud-watch-role/handler.handler",
@@ -1694,10 +1694,7 @@
                 {
                   "Effect": "Allow",
                   "Action": [
-                    "dynamodb:Query",
-                    "dynamodb:PutItem",
                     "dynamodb:GetItem",
-                    "dynamodb:DeleteItem",
                     "dynamodb:UpdateItem"
                   ],
                   "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev"
@@ -1705,10 +1702,7 @@
                 {
                   "Effect": "Allow",
                   "Action": [
-                    "dynamodb:Query",
-                    "dynamodb:PutItem",
                     "dynamodb:GetItem",
-                    "dynamodb:DeleteItem",
                     "dynamodb:UpdateItem"
                   ],
                   "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev/index/CreatedAtIndex"
@@ -2142,7 +2136,7 @@
     "AuthLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AuthLambdaVersionW6Cb7RmLabfPjs8CNb4Db1qXYnMQjPQoetyGwhtE"
+        "Ref": "AuthLambdaVersionTRhiNvl5bKvlEESnbgi3MKNGpv8YQgNcP3Mz6cbx0"
       },
       "Export": {
         "Name": "sls-project4service-dev-AuthLambdaFunctionQualifiedArn"
@@ -2151,7 +2145,7 @@
     "GetTodosLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetTodosLambdaVersionGJchTzwsniSAWOBmyczjtcAHijwoum9tBb1supy660"
+        "Ref": "GetTodosLambdaVersion12O5hd3YIJTeiiZcvWQriEKdBsaEZK2Q21insSzBws"
       },
       "Export": {
         "Name": "sls-project4service-dev-GetTodosLambdaFunctionQualifiedArn"
@@ -2160,7 +2154,7 @@
     "CreateTodoLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateTodoLambdaVersionwpCAPrDboUBTpCOErKfIfy9lgDus0sNwh7jVHKn68Q"
+        "Ref": "CreateTodoLambdaVersionzFpn9avUz6PZlDtoSFaa16p7LVxVHK5sP5als2kZhc"
       },
       "Export": {
         "Name": "sls-project4service-dev-CreateTodoLambdaFunctionQualifiedArn"
@@ -2169,7 +2163,7 @@
     "UpdateTodoLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "UpdateTodoLambdaVersions9AFn0CZbaCXIBUPGytJaKqgV7YimRMehjQrh6AWxbk"
+        "Ref": "UpdateTodoLambdaVersionD0F8Y0VUIvVnsf6WdnLZIcIe4Hq8o0xJ4i1IhqpT8"
       },
       "Export": {
         "Name": "sls-project4service-dev-UpdateTodoLambdaFunctionQualifiedArn"
@@ -2178,7 +2172,7 @@
     "DeleteTodoLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "DeleteTodoLambdaVersion7uQ9vadwrwAphScljhlLZMGXkpJXHRR5KcMYMpuwJec"
+        "Ref": "DeleteTodoLambdaVersionBSsDHarDUADjs0lWL5emviu6SoZ3cOaKYbblh4m28"
       },
       "Export": {
         "Name": "sls-project4service-dev-DeleteTodoLambdaFunctionQualifiedArn"
@@ -2187,7 +2181,7 @@
     "GenerateUploadUrlLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GenerateUploadUrlLambdaVersionIWKNZrDqTswud46IH2e2SSiym0SiGe4xDd4HQUE"
+        "Ref": "GenerateUploadUrlLambdaVersione0NDJhk0L8daehVnvoMVV3LXw6MdSE85jhi6UsDUw"
       },
       "Export": {
         "Name": "sls-project4service-dev-GenerateUploadUrlLambdaFunctionQualifiedArn"
