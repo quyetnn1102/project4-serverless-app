@@ -1,0 +1,2814 @@
+{
+  "service": {
+    "service": "project4service",
+    "serviceObject": {
+      "name": "project4service"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs12.x",
+      "lambdaHashingVersion": "20201221",
+      "stage": "dev",
+      "region": "us-east-1",
+      "tracing": {
+        "lambda": true,
+        "apiGateway": true
+      },
+      "environment": {
+        "TODOS_TABLE": "quyetnn-todos-dev",
+        "TODOS_CREATED_AT_INDEX": "CreatedAtIndex",
+        "ATTACHMENT_S3_BUCKET": "serverless-quyetnn-todo-images-dev",
+        "SIGNED_URL_EXPIRATION": "300"
+      },
+      "logs": {
+        "restApi": {
+          "format": "{\"requestTime\":\"$context.requestTime\",\"requestId\":\"$context.requestId\",\"apiId\":\"$context.apiId\",\"resourceId\":\"$context.resourceId\",\"resourcePath\":\"$context.resourcePath\",\"path\":\"$context.path\",\"httpMethod\":\"$context.httpMethod\",\"status\":\"$context.status\",\"authLatency\":\"$context.authorizer.integrationLatency\",\"integrationLatency\":\"$context.integrationLatency\",\"integrationStatus\":\"$context.integrationStatus\",\"responseLatency\":\"$context.responseLatency\",\"responseLength\":\"$context.responseLength\",\"errorMessage\":\"$context.error.message\",\"format\":\"SLS_ACCESS_LOG\",\"version\":\"1.0.0\"}"
+        }
+      },
+      "iam": {
+        "role": {
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "xray:PutTelemetryRecords",
+                "xray:PutTraceSegments"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      },
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "AuthLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/project4service-dev-Auth"
+            }
+          },
+          "GetTodosLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/project4service-dev-GetTodos"
+            }
+          },
+          "CreateTodoLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/project4service-dev-CreateTodo"
+            }
+          },
+          "UpdateTodoLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/project4service-dev-UpdateTodo"
+            }
+          },
+          "DeleteTodoLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/project4service-dev-DeleteTodo"
+            }
+          },
+          "GenerateUploadUrlLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/project4service-dev-GenerateUploadUrl"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "project4service",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/project4service-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/project4service-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iam\"][\"role\"][\"statements\"][0]"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "xray:PutTraceSegments",
+                          "xray:PutTelemetryRecords"
+                        ],
+                        "Resource": [
+                          "*"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "project4service",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "EnterpriseLogAccessIamRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "AWS": "arn:aws:iam::802587217904:root"
+                    },
+                    "Action": "sts:AssumeRole",
+                    "Condition": {
+                      "StringEquals": {
+                        "sts:ExternalId": "ServerlessEnterprise-56b380ac-a8ce-478e-98a0-58b5434e8cfb"
+                      }
+                    }
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": "LogFilterAccess",
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:FilterLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::GetAtt": [
+                              "AuthLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "GetTodosLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "CreateTodoLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "UpdateTodoLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "DeleteTodoLogGroup",
+                              "Arn"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "GenerateUploadUrlLogGroup",
+                              "Arn"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "AuthLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+              },
+              "Handler": "s_Auth.handler",
+              "Runtime": "nodejs12.x",
+              "FunctionName": "project4service-dev-Auth",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "TracingConfig": {
+                "Mode": "PassThrough"
+              },
+              "Environment": {
+                "Variables": {
+                  "TODOS_TABLE": "quyetnn-todos-dev",
+                  "TODOS_CREATED_AT_INDEX": "CreatedAtIndex",
+                  "ATTACHMENT_S3_BUCKET": "serverless-quyetnn-todo-images-dev",
+                  "SIGNED_URL_EXPIRATION": "300"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "AuthLogGroup"
+            ]
+          },
+          "GetTodosLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+              },
+              "Handler": "s_GetTodos.handler",
+              "Runtime": "nodejs12.x",
+              "FunctionName": "project4service-dev-GetTodos",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "TracingConfig": {
+                "Mode": "PassThrough"
+              },
+              "Environment": {
+                "Variables": {
+                  "TODOS_TABLE": "quyetnn-todos-dev",
+                  "TODOS_CREATED_AT_INDEX": "CreatedAtIndex",
+                  "ATTACHMENT_S3_BUCKET": "serverless-quyetnn-todo-images-dev",
+                  "SIGNED_URL_EXPIRATION": "300"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "GetTodosIamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetTodosIamRoleLambdaExecution",
+              "GetTodosLogGroup"
+            ]
+          },
+          "CreateTodoLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+              },
+              "Handler": "s_CreateTodo.handler",
+              "Runtime": "nodejs12.x",
+              "FunctionName": "project4service-dev-CreateTodo",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "TracingConfig": {
+                "Mode": "PassThrough"
+              },
+              "Environment": {
+                "Variables": {
+                  "TODOS_TABLE": "quyetnn-todos-dev",
+                  "TODOS_CREATED_AT_INDEX": "CreatedAtIndex",
+                  "ATTACHMENT_S3_BUCKET": "serverless-quyetnn-todo-images-dev",
+                  "SIGNED_URL_EXPIRATION": "300"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "CreateTodoIamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CreateTodoIamRoleLambdaExecution",
+              "CreateTodoLogGroup"
+            ]
+          },
+          "UpdateTodoLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+              },
+              "Handler": "s_UpdateTodo.handler",
+              "Runtime": "nodejs12.x",
+              "FunctionName": "project4service-dev-UpdateTodo",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "TracingConfig": {
+                "Mode": "PassThrough"
+              },
+              "Environment": {
+                "Variables": {
+                  "TODOS_TABLE": "quyetnn-todos-dev",
+                  "TODOS_CREATED_AT_INDEX": "CreatedAtIndex",
+                  "ATTACHMENT_S3_BUCKET": "serverless-quyetnn-todo-images-dev",
+                  "SIGNED_URL_EXPIRATION": "300"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "UpdateTodoIamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "UpdateTodoIamRoleLambdaExecution",
+              "UpdateTodoLogGroup"
+            ]
+          },
+          "DeleteTodoLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+              },
+              "Handler": "s_DeleteTodo.handler",
+              "Runtime": "nodejs12.x",
+              "FunctionName": "project4service-dev-DeleteTodo",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "TracingConfig": {
+                "Mode": "PassThrough"
+              },
+              "Environment": {
+                "Variables": {
+                  "TODOS_TABLE": "quyetnn-todos-dev",
+                  "TODOS_CREATED_AT_INDEX": "CreatedAtIndex",
+                  "ATTACHMENT_S3_BUCKET": "serverless-quyetnn-todo-images-dev",
+                  "SIGNED_URL_EXPIRATION": "300"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "DeleteTodoIamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "DeleteTodoIamRoleLambdaExecution",
+              "DeleteTodoLogGroup"
+            ]
+          },
+          "GenerateUploadUrlLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/project4service.zip"
+              },
+              "Handler": "s_GenerateUploadUrl.handler",
+              "Runtime": "nodejs12.x",
+              "FunctionName": "project4service-dev-GenerateUploadUrl",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "TracingConfig": {
+                "Mode": "PassThrough"
+              },
+              "Environment": {
+                "Variables": {
+                  "TODOS_TABLE": "quyetnn-todos-dev",
+                  "TODOS_CREATED_AT_INDEX": "CreatedAtIndex",
+                  "ATTACHMENT_S3_BUCKET": "serverless-quyetnn-todo-images-dev",
+                  "SIGNED_URL_EXPIRATION": "300"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "GenerateUploadUrlIamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GenerateUploadUrlIamRoleLambdaExecution",
+              "GenerateUploadUrlLogGroup"
+            ]
+          },
+          "AuthLambdaVersionW6Cb7RmLabfPjs8CNb4Db1qXYnMQjPQoetyGwhtE": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "AuthLambdaFunction"
+              },
+              "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+            }
+          },
+          "GetTodosLambdaVersionGJchTzwsniSAWOBmyczjtcAHijwoum9tBb1supy660": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetTodosLambdaFunction"
+              },
+              "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+            }
+          },
+          "CreateTodoLambdaVersionwpCAPrDboUBTpCOErKfIfy9lgDus0sNwh7jVHKn68Q": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CreateTodoLambdaFunction"
+              },
+              "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+            }
+          },
+          "UpdateTodoLambdaVersions9AFn0CZbaCXIBUPGytJaKqgV7YimRMehjQrh6AWxbk": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UpdateTodoLambdaFunction"
+              },
+              "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+            }
+          },
+          "DeleteTodoLambdaVersion7uQ9vadwrwAphScljhlLZMGXkpJXHRR5KcMYMpuwJec": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "DeleteTodoLambdaFunction"
+              },
+              "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+            }
+          },
+          "GenerateUploadUrlLambdaVersionIWKNZrDqTswud46IH2e2SSiym0SiGe4xDd4HQUE": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GenerateUploadUrlLambdaFunction"
+              },
+              "CodeSha256": "ytlGs7fxRopd1v3gQZ0rGWgL1a+Li8CEAgm5psYYAdE="
+            }
+          },
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "dev-project4service",
+              "EndpointConfiguration": {
+                "Types": [
+                  "EDGE"
+                ]
+              },
+              "Policy": ""
+            }
+          },
+          "ApiGatewayResourceTodos": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "todos",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceTodosTodoidVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceTodos"
+              },
+              "PathPart": "{todoId}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceTodosTodoidVarAttachment": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceTodosTodoidVar"
+              },
+              "PathPart": "attachment",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodTodosOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST,GET'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceTodos"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodTodosTodoidVarOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,PATCH'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceTodosTodoidVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodTodosTodoidVarAttachmentOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceTodosTodoidVarAttachment"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodTodosGet": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "GET",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceTodos"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "CUSTOM",
+              "AuthorizerId": {
+                "Ref": "AuthApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GetTodosLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": "AuthApiGatewayAuthorizer"
+          },
+          "ApiGatewayMethodTodosPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceTodos"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "CUSTOM",
+              "AuthorizerId": {
+                "Ref": "AuthApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "CreateTodoLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": [],
+              "RequestValidatorId": {
+                "Ref": "ApiGatewayProject4serviceRequestValidator"
+              },
+              "RequestModels": {
+                "application/json": {
+                  "Ref": "ApiGatewayMethodTodosPostApplicationJsonModel"
+                }
+              }
+            },
+            "DependsOn": "AuthApiGatewayAuthorizer"
+          },
+          "ApiGatewayMethodTodosTodoidVarPatch": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "PATCH",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceTodosTodoidVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "CUSTOM",
+              "AuthorizerId": {
+                "Ref": "AuthApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "UpdateTodoLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": [],
+              "RequestValidatorId": {
+                "Ref": "ApiGatewayProject4serviceRequestValidator"
+              },
+              "RequestModels": {
+                "application/json": {
+                  "Ref": "ApiGatewayMethodTodosTodoidVarPatchApplicationJsonModel"
+                }
+              }
+            },
+            "DependsOn": "AuthApiGatewayAuthorizer"
+          },
+          "ApiGatewayMethodTodosTodoidVarDelete": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "DELETE",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceTodosTodoidVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "CUSTOM",
+              "AuthorizerId": {
+                "Ref": "AuthApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "DeleteTodoLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": "AuthApiGatewayAuthorizer"
+          },
+          "ApiGatewayMethodTodosTodoidVarAttachmentPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceTodosTodoidVarAttachment"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "CUSTOM",
+              "AuthorizerId": {
+                "Ref": "AuthApiGatewayAuthorizer"
+              },
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "GenerateUploadUrlLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            },
+            "DependsOn": "AuthApiGatewayAuthorizer"
+          },
+          "ApiGatewayProject4serviceRequestValidator": {
+            "Type": "AWS::ApiGateway::RequestValidator",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ValidateRequestBody": true,
+              "ValidateRequestParameters": true,
+              "Name": "project4service-dev | Validate request body and querystring parameters"
+            }
+          },
+          "ApiGatewayMethodTodosPostApplicationJsonModel": {
+            "Type": "AWS::ApiGateway::Model",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ContentType": "application/json",
+              "Schema": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "title": "group",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "dueDate": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "dueDate"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "ApiGatewayMethodTodosTodoidVarPatchApplicationJsonModel": {
+            "Type": "AWS::ApiGateway::Model",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ContentType": "application/json",
+              "Schema": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "title": "group",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "dueDate": {
+                    "type": "string"
+                  },
+                  "done": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "dueDate",
+                  "done"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "AuthApiGatewayAuthorizer": {
+            "Type": "AWS::ApiGateway::Authorizer",
+            "Properties": {
+              "IdentitySource": "method.request.header.Authorization",
+              "Name": "Auth",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "AuthorizerUri": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":apigateway:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":lambda:path/2015-03-31/functions/",
+                    {
+                      "Fn::GetAtt": [
+                        "AuthLambdaFunction",
+                        "Arn"
+                      ]
+                    },
+                    "/invocations"
+                  ]
+                ]
+              },
+              "Type": "TOKEN"
+            }
+          },
+          "ApiGatewayDeployment1664868494513": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "dev"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodTodosOptions",
+              "ApiGatewayMethodTodosTodoidVarOptions",
+              "ApiGatewayMethodTodosTodoidVarAttachmentOptions",
+              "ApiGatewayMethodTodosGet",
+              "ApiGatewayMethodTodosPost",
+              "ApiGatewayMethodTodosTodoidVarPatch",
+              "ApiGatewayMethodTodosTodoidVarDelete",
+              "ApiGatewayMethodTodosTodoidVarAttachmentPost"
+            ]
+          },
+          "GetTodosLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetTodosLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "AuthLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "AuthLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "CreateTodoLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CreateTodoLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "UpdateTodoLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "UpdateTodoLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "DeleteTodoLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "DeleteTodoLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "GenerateUploadUrlLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GenerateUploadUrlLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "ApiGatewayLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/api-gateway/project4service-dev"
+            }
+          },
+          "CustomApiGatewayAccountCloudWatchRole": {
+            "Type": "Custom::ApiGatewayAccountRole",
+            "Version": 1,
+            "Properties": {
+              "ServiceToken": {
+                "Fn::GetAtt": [
+                  "CustomDashresourceDashapigwDashcwDashroleLambdaFunction",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "IamRoleCustomResourcesLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "dev",
+                        "project4service",
+                        "custom-resources-lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Resource": {
+                          "Fn::Join": [
+                            ":",
+                            [
+                              "arn",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "iam:",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              "role/*"
+                            ]
+                          ]
+                        },
+                        "Action": [
+                          "iam:AttachRolePolicy",
+                          "iam:CreateRole",
+                          "iam:ListAttachedRolePolicies",
+                          "iam:PassRole"
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Resource": {
+                          "Fn::Join": [
+                            ":",
+                            [
+                              "arn",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              "apigateway:*::/account"
+                            ]
+                          ]
+                        },
+                        "Action": [
+                          "apigateway:GET",
+                          "apigateway:PATCH"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "CustomDashresourceDashapigwDashcwDashroleLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z/custom-resources.zip"
+              },
+              "FunctionName": "project4service-dev-custom-resource-apigw-cw-role",
+              "Handler": "api-gateway-cloud-watch-role/handler.handler",
+              "MemorySize": 1024,
+              "Runtime": "nodejs14.x",
+              "Timeout": 180,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleCustomResourcesLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "IamRoleCustomResourcesLambdaExecution"
+            ]
+          },
+          "GetTodosIamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "project4service",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/project4service-dev-GetTodos:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:Query",
+                          "dynamodb:GetItem"
+                        ],
+                        "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:Query",
+                          "dynamodb:GetItem"
+                        ],
+                        "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev/index/CreatedAtIndex"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "xray:PutTraceSegments",
+                          "xray:PutTelemetryRecords"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "project4service",
+                    "dev",
+                    "GetTodos",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              },
+              "ManagedPolicyArns": []
+            }
+          },
+          "CreateTodoIamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "project4service",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/project4service-dev-CreateTodo:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:PutItem"
+                        ],
+                        "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "xray:PutTraceSegments",
+                          "xray:PutTelemetryRecords"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "project4service",
+                    "dev",
+                    "CreateTodo",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              },
+              "ManagedPolicyArns": []
+            }
+          },
+          "UpdateTodoIamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "project4service",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/project4service-dev-UpdateTodo:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:Query",
+                          "dynamodb:PutItem",
+                          "dynamodb:GetItem",
+                          "dynamodb:DeleteItem",
+                          "dynamodb:UpdateItem"
+                        ],
+                        "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:Query",
+                          "dynamodb:PutItem",
+                          "dynamodb:GetItem",
+                          "dynamodb:DeleteItem",
+                          "dynamodb:UpdateItem"
+                        ],
+                        "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev/index/CreatedAtIndex"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:PutObject",
+                          "s3:GetObject"
+                        ],
+                        "Resource": "arn:aws:s3:::serverless-quyetnn-todo-images-dev/*"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "xray:PutTraceSegments",
+                          "xray:PutTelemetryRecords"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "project4service",
+                    "dev",
+                    "UpdateTodo",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              },
+              "ManagedPolicyArns": []
+            }
+          },
+          "DeleteTodoIamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "project4service",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/project4service-dev-DeleteTodo:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:DeleteItem",
+                          "dynamodb:GetItem"
+                        ],
+                        "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "xray:PutTraceSegments",
+                          "xray:PutTelemetryRecords"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "project4service",
+                    "dev",
+                    "DeleteTodo",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              },
+              "ManagedPolicyArns": []
+            }
+          },
+          "GenerateUploadUrlIamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "project4service",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/project4service-dev-GenerateUploadUrl:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:Query"
+                        ],
+                        "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:Query"
+                        ],
+                        "Resource": "arn:aws:dynamodb:us-east-1:*:table/quyetnn-todos-dev/index/CreatedAtIndex"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:PutObject",
+                          "s3:GetObject"
+                        ],
+                        "Resource": "arn:aws:s3:::serverless-quyetnn-todo-images-dev/*"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "xray:PutTraceSegments",
+                          "xray:PutTelemetryRecords"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "project4service",
+                    "dev",
+                    "GenerateUploadUrl",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              },
+              "ManagedPolicyArns": []
+            }
+          },
+          "GatewayResponseDefault4XX": {
+            "Type": "AWS::ApiGateway::GatewayResponse",
+            "Properties": {
+              "ResponseParameters": {
+                "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+                "gatewayresponse.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "gatewayresponse.header.Access-Control-Allow-Methods": "'GET,OPTIONS,POST'"
+              },
+              "ResponseType": "DEFAULT_4XX",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "TodosTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "todoId",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "userId",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "createdAt",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "userId",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "todoId",
+                  "KeyType": "RANGE"
+                }
+              ],
+              "BillingMode": "PAY_PER_REQUEST",
+              "StreamSpecification": {
+                "StreamViewType": "NEW_IMAGE"
+              },
+              "TableName": "quyetnn-todos-dev",
+              "LocalSecondaryIndexes": [
+                {
+                  "IndexName": "CreatedAtIndex",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "userId",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "createdAt",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "ProjectionType": "ALL"
+                  }
+                }
+              ]
+            }
+          },
+          "AttachmentsBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketName": "serverless-quyetnn-todo-images-dev",
+              "CorsConfiguration": {
+                "CorsRules": [
+                  {
+                    "AllowedOrigins": [
+                      "*"
+                    ],
+                    "AllowedHeaders": [
+                      "*"
+                    ],
+                    "AllowedMethods": [
+                      "GET",
+                      "PUT",
+                      "POST",
+                      "DELETE",
+                      "HEAD"
+                    ],
+                    "MaxAge": 3000
+                  }
+                ]
+              }
+            }
+          },
+          "BucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "PolicyDocument": {
+                "Id": "MyPolicy",
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Sid": "PublicReadForGetBucketObjects",
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:GetObject",
+                    "Resource": "arn:aws:s3:::serverless-quyetnn-todo-images-dev/*"
+                  }
+                ]
+              },
+              "Bucket": {
+                "Ref": "AttachmentsBucket"
+              }
+            }
+          },
+          "CWLSubFilterAuthLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:56b380ac-a8ce-478e-98a0-58b5434e8cfb#GDwr6KbZj94XMTVZ4L#project4service#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "AuthLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterGetTodosLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:56b380ac-a8ce-478e-98a0-58b5434e8cfb#GDwr6KbZj94XMTVZ4L#project4service#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "GetTodosLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterCreateTodoLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:56b380ac-a8ce-478e-98a0-58b5434e8cfb#GDwr6KbZj94XMTVZ4L#project4service#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "CreateTodoLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterUpdateTodoLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:56b380ac-a8ce-478e-98a0-58b5434e8cfb#GDwr6KbZj94XMTVZ4L#project4service#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "UpdateTodoLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterDeleteTodoLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:56b380ac-a8ce-478e-98a0-58b5434e8cfb#GDwr6KbZj94XMTVZ4L#project4service#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "DeleteTodoLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterGenerateUploadUrlLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:56b380ac-a8ce-478e-98a0-58b5434e8cfb#GDwr6KbZj94XMTVZ4L#project4service#dev",
+              "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
+              "LogGroupName": {
+                "Ref": "GenerateUploadUrlLogGroup"
+              }
+            }
+          },
+          "CWLSubFilterApiGatewayLogGroupUsEast1": {
+            "Type": "AWS::Logs::SubscriptionFilter",
+            "Properties": {
+              "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:56b380ac-a8ce-478e-98a0-58b5434e8cfb#GDwr6KbZj94XMTVZ4L#project4service#dev",
+              "FilterPattern": "\"SLS_ACCESS_LOG\"",
+              "LogGroupName": {
+                "Ref": "ApiGatewayLogGroup"
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            },
+            "Export": {
+              "Name": "sls-project4service-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "EnterpriseLogAccessIamRole": {
+            "Value": {
+              "Fn::GetAtt": [
+                "EnterpriseLogAccessIamRole",
+                "Arn"
+              ]
+            },
+            "Export": {
+              "Name": "sls-project4service-dev-EnterpriseLogAccessIamRole"
+            }
+          },
+          "AuthLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "AuthLambdaVersionW6Cb7RmLabfPjs8CNb4Db1qXYnMQjPQoetyGwhtE"
+            },
+            "Export": {
+              "Name": "sls-project4service-dev-AuthLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetTodosLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetTodosLambdaVersionGJchTzwsniSAWOBmyczjtcAHijwoum9tBb1supy660"
+            },
+            "Export": {
+              "Name": "sls-project4service-dev-GetTodosLambdaFunctionQualifiedArn"
+            }
+          },
+          "CreateTodoLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CreateTodoLambdaVersionwpCAPrDboUBTpCOErKfIfy9lgDus0sNwh7jVHKn68Q"
+            },
+            "Export": {
+              "Name": "sls-project4service-dev-CreateTodoLambdaFunctionQualifiedArn"
+            }
+          },
+          "UpdateTodoLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UpdateTodoLambdaVersions9AFn0CZbaCXIBUPGytJaKqgV7YimRMehjQrh6AWxbk"
+            },
+            "Export": {
+              "Name": "sls-project4service-dev-UpdateTodoLambdaFunctionQualifiedArn"
+            }
+          },
+          "DeleteTodoLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "DeleteTodoLambdaVersion7uQ9vadwrwAphScljhlLZMGXkpJXHRR5KcMYMpuwJec"
+            },
+            "Export": {
+              "Name": "sls-project4service-dev-DeleteTodoLambdaFunctionQualifiedArn"
+            }
+          },
+          "GenerateUploadUrlLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GenerateUploadUrlLambdaVersionIWKNZrDqTswud46IH2e2SSiym0SiGe4xDd4HQUE"
+            },
+            "Export": {
+              "Name": "sls-project4service-dev-GenerateUploadUrlLambdaFunctionQualifiedArn"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "ApiGatewayRestApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/dev"
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-project4service-dev-ServiceEndpoint"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                  {
+                    "ServerSideEncryptionByDefault": {
+                      "SSEAlgorithm": "AES256"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "ServerlessDeploymentBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "ServerlessDeploymentBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "s3:*",
+                    "Effect": "Deny",
+                    "Principal": "*",
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":s3:::",
+                            {
+                              "Ref": "ServerlessDeploymentBucket"
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "Condition": {
+                      "Bool": {
+                        "aws:SecureTransport": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "plugins": [
+      "serverless-webpack",
+      "serverless-iam-roles-per-function",
+      "serverless-plugin-tracing"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "Auth": {
+        "handler": "s_Auth.handler",
+        "events": [],
+        "name": "project4service-dev-Auth",
+        "package": {
+          "artifact": ".serverless\\project4service.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs12.x",
+        "vpc": {},
+        "versionLogicalId": "AuthLambdaVersionW6Cb7RmLabfPjs8CNb4Db1qXYnMQjPQoetyGwhtE"
+      },
+      "GetTodos": {
+        "handler": "s_GetTodos.handler",
+        "events": [
+          {
+            "http": {
+              "method": "get",
+              "path": "todos",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "name": "Auth",
+                "arn": {
+                  "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"AuthLambdaPermissionApiGateway\"][\"Properties\"][\"FunctionName\"]"
+                },
+                "managedExternally": false,
+                "identitySource": "method.request.header.Authorization"
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "iamRoleStatements": [
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GetTodosIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][1]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GetTodosIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][2]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GetTodosIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][3]"
+          }
+        ],
+        "name": "project4service-dev-GetTodos",
+        "package": {
+          "artifact": ".serverless\\project4service.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs12.x",
+        "vpc": {},
+        "versionLogicalId": "GetTodosLambdaVersionGJchTzwsniSAWOBmyczjtcAHijwoum9tBb1supy660"
+      },
+      "CreateTodo": {
+        "handler": "s_CreateTodo.handler",
+        "events": [
+          {
+            "http": {
+              "method": "post",
+              "path": "todos",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "name": "Auth",
+                "arn": {
+                  "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"AuthLambdaPermissionApiGateway\"][\"Properties\"][\"FunctionName\"]"
+                },
+                "managedExternally": false,
+                "identitySource": "method.request.header.Authorization"
+              },
+              "request": {
+                "schemas": {
+                  "application/json": {
+                    "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodTodosPostApplicationJsonModel\"][\"Properties\"][\"Schema\"]"
+                  }
+                }
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "iamRoleStatements": [
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CreateTodoIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][1]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CreateTodoIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][2]"
+          }
+        ],
+        "name": "project4service-dev-CreateTodo",
+        "package": {
+          "artifact": ".serverless\\project4service.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs12.x",
+        "vpc": {},
+        "versionLogicalId": "CreateTodoLambdaVersionwpCAPrDboUBTpCOErKfIfy9lgDus0sNwh7jVHKn68Q"
+      },
+      "UpdateTodo": {
+        "handler": "s_UpdateTodo.handler",
+        "events": [
+          {
+            "http": {
+              "method": "patch",
+              "path": "todos/{todoId}",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "PATCH"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "name": "Auth",
+                "arn": {
+                  "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"AuthLambdaPermissionApiGateway\"][\"Properties\"][\"FunctionName\"]"
+                },
+                "managedExternally": false,
+                "identitySource": "method.request.header.Authorization"
+              },
+              "request": {
+                "schemas": {
+                  "application/json": {
+                    "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodTodosTodoidVarPatchApplicationJsonModel\"][\"Properties\"][\"Schema\"]"
+                  }
+                }
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "iamRoleStatements": [
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"UpdateTodoIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][1]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"UpdateTodoIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][2]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"UpdateTodoIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][3]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"UpdateTodoIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][4]"
+          }
+        ],
+        "name": "project4service-dev-UpdateTodo",
+        "package": {
+          "artifact": ".serverless\\project4service.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs12.x",
+        "vpc": {},
+        "versionLogicalId": "UpdateTodoLambdaVersions9AFn0CZbaCXIBUPGytJaKqgV7YimRMehjQrh6AWxbk"
+      },
+      "DeleteTodo": {
+        "handler": "s_DeleteTodo.handler",
+        "events": [
+          {
+            "http": {
+              "method": "delete",
+              "path": "todos/{todoId}",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "DELETE"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "name": "Auth",
+                "arn": {
+                  "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"AuthLambdaPermissionApiGateway\"][\"Properties\"][\"FunctionName\"]"
+                },
+                "managedExternally": false,
+                "identitySource": "method.request.header.Authorization"
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "iamRoleStatements": [
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"DeleteTodoIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][1]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"DeleteTodoIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][2]"
+          }
+        ],
+        "name": "project4service-dev-DeleteTodo",
+        "package": {
+          "artifact": ".serverless\\project4service.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs12.x",
+        "vpc": {},
+        "versionLogicalId": "DeleteTodoLambdaVersion7uQ9vadwrwAphScljhlLZMGXkpJXHRR5KcMYMpuwJec"
+      },
+      "GenerateUploadUrl": {
+        "handler": "s_GenerateUploadUrl.handler",
+        "events": [
+          {
+            "http": {
+              "method": "post",
+              "path": "todos/{todoId}/attachment",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "POST"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
+              "authorizer": {
+                "name": "Auth",
+                "arn": {
+                  "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"AuthLambdaPermissionApiGateway\"][\"Properties\"][\"FunctionName\"]"
+                },
+                "managedExternally": false,
+                "identitySource": "method.request.header.Authorization"
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "iamRoleStatements": [
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GenerateUploadUrlIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][1]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GenerateUploadUrlIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][2]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GenerateUploadUrlIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][3]"
+          },
+          {
+            "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GenerateUploadUrlIamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][4]"
+          }
+        ],
+        "name": "project4service-dev-GenerateUploadUrl",
+        "package": {
+          "artifact": ".serverless\\project4service.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs12.x",
+        "vpc": {},
+        "versionLogicalId": "GenerateUploadUrlLambdaVersionIWKNZrDqTswud46IH2e2SSiym0SiGe4xDd4HQUE"
+      }
+    },
+    "resources": {
+      "Resources": {
+        "GatewayResponseDefault4XX": {
+          "Type": "AWS::ApiGateway::GatewayResponse",
+          "Properties": {
+            "ResponseParameters": {
+              "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+              "gatewayresponse.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              "gatewayresponse.header.Access-Control-Allow-Methods": "'GET,OPTIONS,POST'"
+            },
+            "ResponseType": "DEFAULT_4XX",
+            "RestApiId": {
+              "Ref": "ApiGatewayRestApi"
+            }
+          }
+        },
+        "TodosTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "todoId",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "userId",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "createdAt",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "userId",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "todoId",
+                "KeyType": "RANGE"
+              }
+            ],
+            "BillingMode": "PAY_PER_REQUEST",
+            "StreamSpecification": {
+              "StreamViewType": "NEW_IMAGE"
+            },
+            "TableName": "quyetnn-todos-dev",
+            "LocalSecondaryIndexes": [
+              {
+                "IndexName": "CreatedAtIndex",
+                "KeySchema": [
+                  {
+                    "AttributeName": "userId",
+                    "KeyType": "HASH"
+                  },
+                  {
+                    "AttributeName": "createdAt",
+                    "KeyType": "RANGE"
+                  }
+                ],
+                "Projection": {
+                  "ProjectionType": "ALL"
+                }
+              }
+            ]
+          }
+        },
+        "AttachmentsBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": "serverless-quyetnn-todo-images-dev",
+            "CorsConfiguration": {
+              "CorsRules": [
+                {
+                  "AllowedOrigins": [
+                    "*"
+                  ],
+                  "AllowedHeaders": [
+                    "*"
+                  ],
+                  "AllowedMethods": [
+                    "GET",
+                    "PUT",
+                    "POST",
+                    "DELETE",
+                    "HEAD"
+                  ],
+                  "MaxAge": 3000
+                }
+              ]
+            }
+          }
+        },
+        "BucketPolicy": {
+          "Type": "AWS::S3::BucketPolicy",
+          "Properties": {
+            "PolicyDocument": {
+              "Id": "MyPolicy",
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "PublicReadForGetBucketObjects",
+                  "Effect": "Allow",
+                  "Principal": "*",
+                  "Action": "s3:GetObject",
+                  "Resource": "arn:aws:s3:::serverless-quyetnn-todo-images-dev/*"
+                }
+              ]
+            },
+            "Bucket": {
+              "Ref": "AttachmentsBucket"
+            }
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless.yml",
+    "initialServerlessConfig": {
+      "org": "quyetnn1102",
+      "app": "project4application",
+      "service": "project4service",
+      "plugins": {
+        "$ref": "$[\"service\"][\"plugins\"]"
+      },
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      },
+      "resources": {
+        "$ref": "$[\"service\"][\"resources\"]"
+      }
+    },
+    "app": "project4application",
+    "org": "quyetnn1102",
+    "layers": {},
+    "isDashboardMonitoringPreconfigured": true,
+    "isDashboardAppPreconfigured": true,
+    "orgUid": "56b380ac-a8ce-478e-98a0-58b5434e8cfb",
+    "appUid": "GDwr6KbZj94XMTVZ4L"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/project4service/dev/1664868560441-2022-10-04T07:29:20.441Z",
+    "artifact": ""
+  }
+}

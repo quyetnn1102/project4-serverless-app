@@ -1,25 +1,42 @@
 import 'source-map-support/register'
-
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
-import { cors, httpErrorHandler } from 'middy/middlewares'
-
-import { updateTodo } from '../../businessLogic/todos'
+import { cors} from 'middy/middlewares'
+import { updateTodoItem } from '../../helpers/todos'
 import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
-import { getUserId } from '../utils'
+import { createLogger } from '../../utils/logger'
 
+const logger = createLogger('todos');
 export const handler = middy(
-  async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId
+  async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {    
     const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
-    // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
+
+    const isExist = await updateTodoItem(event, updatedTodo);
+    console.log("Check existing" + isExist);
+    logger.info("Check existing" + isExist);
+    // check todo item is existing or not first
+    if (!isExist) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({
+          error: 'ERROR, this todo item not found'
+        })
+      };
+    }
+    logger.info("Todo item has been updated");
+    // then update it
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
+      },
+      body: JSON.stringify({})
+    }
+  })
 
 
-    return undefined
-)
-
-handler
-  .use(httpErrorHandler())
+  handler  
   .use(
     cors({
       credentials: true
