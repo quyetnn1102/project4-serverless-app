@@ -3,7 +3,7 @@ import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors} from 'middy/middlewares'
-import { generateUploadUrl } from '../../helpers/todos'
+import { generateUploadUrl } from '../../businessLogic/todos'
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {    
